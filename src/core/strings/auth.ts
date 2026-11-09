@@ -1,0 +1,16 @@
+export const auth = {
+  title: 'تسجيل الدخول',
+  subtitle: 'أهلاً بك، أدخل بياناتك للمتابعة',
+  phone: 'رقم الهاتف',
+  password: 'كلمة المرور',
+  instituteCode: 'رمز المعهد',
+  instituteCodeHint: 'مطلوب فقط إذا كان رقمك مسجلاً في أكثر من معهد',
+  show: 'إظهار كلمة المرور',
+  hide: 'إخفاء كلمة المرور',
+  submit: 'دخول',
+  phoneRequired: 'أدخل رقم الهاتف',
+  phoneInvalid: 'رقم الهاتف غير صالح',
+  passwordRequired: 'أدخل كلمة المرور',
+  codeRequired: 'أدخل رمز المعهد',
+  restoring: 'جارٍ استعادة الجلسة',
+} as const;
