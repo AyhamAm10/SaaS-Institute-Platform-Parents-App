@@ -56,4 +56,7 @@ export const darkTokens: ThemeTokens = {
   ringEnd: '#D4541A',
   fab: '#141416',
   fabIcon: '#FFFFFF',
+  dockBg: '#1F1F23',
+  dockBorder: 'rgba(255, 255, 255, 0.10)',
+  dockActive: 'rgba(255, 255, 255, 0.12)',
 };

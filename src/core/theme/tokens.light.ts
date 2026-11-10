@@ -57,4 +57,7 @@ export const lightTokens: ThemeTokens = {
   ringEnd: '#D4541A',
   fab: '#141416',
   fabIcon: '#FFFFFF',
+  dockBg: '#141416',
+  dockBorder: 'rgba(255, 255, 255, 0.10)',
+  dockActive: 'rgba(255, 255, 255, 0.12)',
 };

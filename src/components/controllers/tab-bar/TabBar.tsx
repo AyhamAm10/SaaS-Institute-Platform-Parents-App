@@ -2,8 +2,8 @@ import type { ComponentProps } from 'react';
 import { View } from 'react-native';
 import type { Tabs } from 'expo-router';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { MAX_WIDTH, space } from '@/core/theme/metrics';
-import { GlassSurface } from '../glass';
+import { MAX_WIDTH, radius, space } from '@/core/theme/metrics';
+import { useTheme } from '@/core/theme/ThemeProvider';
 import { Row } from '../layout';
 import { TAB_BAR_HEIGHT, type TabItems } from './init/tab-bar.init';
 import { ActionButton } from './ui/ActionButton';
@@ -19,9 +19,10 @@ interface Props extends TabBarProps {
   onAction: () => void;
 }
 
-/** Floating glass pill: two tabs, an ink action button with orange glow, two tabs. */
+/** Floating solid ink dock: two tabs, an orange action button with glow, two tabs. */
 export function TabBar({ state, navigation, items, actionLabel, actionOpen, onAction }: Props) {
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
   const routes = state.routes.filter((r) => items[r.name]);
   const render = (route: (typeof routes)[number]) => {
     const focused = state.routes[state.index]?.key === route.key;
@@ -39,15 +40,19 @@ export function TabBar({ state, navigation, items, actionLabel, actionOpen, onAc
   return (
     <View pointerEvents="box-none" style={{ position: 'absolute', start: 0, end: 0, bottom: 0, alignItems: 'center' }}>
       <View style={{ width: '100%', maxWidth: MAX_WIDTH, paddingHorizontal: space.lg, marginBottom: insets.bottom + space.sm }}>
-        <GlassSurface strength="strong" radius="pill" shadow="elev3">
+        <View style={{ borderRadius: radius.pill, backgroundColor: theme.dockBg, borderWidth: 1, borderColor: theme.dockBorder, boxShadow: theme.elev3 }}>
           <Row accessibilityRole="tablist" height={TAB_BAR_HEIGHT} px="sm">
-            {routes.slice(0, half).map(render)}
-            <View style={{ width: 78, alignItems: 'center' }}>
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+              {routes.slice(0, half).map(render)}
+            </View>
+            <View style={{ width: 70, alignItems: 'center' }}>
               <ActionButton label={actionLabel} open={actionOpen} onPress={onAction} />
             </View>
-            {routes.slice(half).map(render)}
+            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+              {routes.slice(half).map(render)}
+            </View>
           </Row>
-        </GlassSurface>
+        </View>
       </View>
     </View>
   );

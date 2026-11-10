@@ -1,41 +1,37 @@
-import { useEffect } from 'react';
-import Animated, { useAnimatedStyle, useReducedMotion, useSharedValue, withSpring } from 'react-native-reanimated';
-import { radius } from '@/core/theme/metrics';
+import Animated, { LinearTransition, useReducedMotion } from 'react-native-reanimated';
+import { radius, space } from '@/core/theme/metrics';
 import { useTheme } from '@/core/theme/ThemeProvider';
 import { PressableScale } from '../../_shared/PressableScale';
 import { Icon } from '../../icon';
-import { Stack } from '../../layout';
+import { Box } from '../../layout';
 import { Text } from '../../text';
 import type { TabMeta } from '../init/tab-bar.init';
 
 interface Props { meta: TabMeta; focused: boolean; onPress: () => void }
 
-const SPRING = { damping: 14, stiffness: 220, mass: 0.7 } as const;
+const SLIDE = LinearTransition.springify().damping(18).stiffness(220);
 
-/** One tab: duotone icon on a soft orange pill, label, and an orange dot that springs in when active. */
+/**
+ * One tab. Inactive: a bare outline icon. Active: the item grows into a soft white pill on the ink dock that holds the
+ * filled icon and its label side by side (the neighbours glide over via a layout transition).
+ */
 export function TabItem({ meta, focused, onPress }: Props) {
   const theme = useTheme();
   const reduce = useReducedMotion();
-  const on = useSharedValue(focused ? 1 : 0);
-  useEffect(() => {
-    on.set(reduce ? (focused ? 1 : 0) : withSpring(focused ? 1 : 0, SPRING));
-  }, [focused, reduce, on]);
-  const pill = useAnimatedStyle(() => ({ opacity: on.value, transform: [{ scale: 0.6 + on.value * 0.4 }] }));
-  const dot = useAnimatedStyle(() => ({ opacity: on.value, transform: [{ scale: on.value }] }));
-  const lift = useAnimatedStyle(() => ({ transform: [{ translateY: -2 * on.value }] }));
   return (
-    <PressableScale
-      role="tab" label={meta.label} state={{ selected: focused }} onPress={onPress} scaleTo={0.92}
-      outer={{ flex: 1 }} inner={{ minHeight: 56, alignItems: 'center', justifyContent: 'center' }}
-    >
-      <Animated.View style={[{ alignItems: 'center', gap: 2 }, lift]}>
-        <Stack align="center" justify="center" width={48} height={30}>
-          <Animated.View style={[{ position: 'absolute', width: 48, height: 30, borderRadius: radius.pill, backgroundColor: theme.brandAccentSoft }, pill]} />
-          <Icon name={meta.icon} tone={focused ? 'accentSolid' : 'muted'} />
-        </Stack>
-        <Text variant="caption" tone={focused ? 'accent' : 'muted'} numberOfLines={1}>{meta.label}</Text>
-      </Animated.View>
-      <Animated.View style={[{ position: 'absolute', bottom: 3, width: 5, height: 5, borderRadius: 3, backgroundColor: theme.brandAccent }, dot]} />
-    </PressableScale>
+    <Animated.View layout={reduce ? undefined : SLIDE}>
+      <PressableScale
+        role="tab" label={meta.label} state={{ selected: focused }} onPress={onPress} scaleTo={0.92}
+        inner={{
+          height: 46, minWidth: 44, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', flexDirection: 'row',
+          gap: space.xs, paddingHorizontal: focused ? space.md : 0, backgroundColor: focused ? theme.dockActive : 'transparent',
+        }}
+      >
+        <Box opacity={focused ? 1 : 0.6}>
+          <Icon name={meta.icon} tone={focused ? 'accentSolid' : 'inverse'} duotone={!focused} />
+        </Box>
+        {focused ? <Text variant="label" tone="inverse" numberOfLines={1}>{meta.label}</Text> : null}
+      </PressableScale>
+    </Animated.View>
   );
 }

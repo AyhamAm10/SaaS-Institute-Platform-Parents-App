@@ -9,7 +9,7 @@ interface Props { label: string; open: boolean; onPress: () => void }
 
 const SIZE = 58;
 
-/** Center button: ink circle, orange glow ring, "+" that rotates 45deg while the sheet is open. */
+/** Center button: orange circle, glow, "+" that rotates 45deg while the sheet is open. */
 export function ActionButton({ label, open, onPress }: Props) {
   const theme = useTheme();
   const reduce = useReducedMotion();
@@ -22,9 +22,9 @@ export function ActionButton({ label, open, onPress }: Props) {
     <PressableScale
       label={label} onPress={onPress} scaleTo={0.93}
       inner={{
-        width: SIZE, height: SIZE, borderRadius: radius.pill, backgroundColor: theme.fab, alignItems: 'center',
-        justifyContent: 'center', borderWidth: 2, borderColor: theme.brandAccentRing,
-        boxShadow: `${theme.brandGlow}, 0 0 0 5px ${theme.brandAccentSoft}`,
+        width: SIZE, height: SIZE, borderRadius: radius.pill, backgroundColor: theme.brandAccent, alignItems: 'center',
+        justifyContent: 'center', borderWidth: 4, borderColor: theme.dockBg,
+        boxShadow: theme.brandGlow,
       }}
     >
       <Animated.View style={spin}><Icon name="add" size="lg" tone="inverse" duotone={false} /></Animated.View>

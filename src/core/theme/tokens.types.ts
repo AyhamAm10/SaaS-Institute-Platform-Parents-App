@@ -63,4 +63,8 @@ export interface ThemeTokens {
   /** Ink circle of the tab bar center button. */
   fab: string;
   fabIcon: string;
+  /** Floating tab bar (a solid ink dock in both schemes). */
+  dockBg: string;
+  dockBorder: string;
+  dockActive: string;
 }

@@ -35,7 +35,7 @@ Folder shape per controller: `init/` (props, variant maps) · `state/` (only if 
 | `TextField` | Glass input | none | `label error hint password` + TextInput props | `<TextField label=".." value={v} onChangeText={s}/>` |
 | `Toggle` | Switch (orange when on) | none | `value onChange label` | `<Toggle value={v} onChange={s} label=".."/>` |
 | `Sheet` | Glass bottom sheet, spring | none | `visible title onClose` | `<Sheet visible={o} title=".." onClose={c}>..</Sheet>` |
-| `TabBar` | Floating glass tab bar + ink action button | none | `items actionLabel actionOpen onAction` (+ tab bar props) | in `features/shell` |
+| `TabBar` | Floating solid ink dock (active tab = expanding pill with icon + label) + orange action button | none | `items actionLabel actionOpen onAction` (+ tab bar props) | in `features/shell` |
 | `EmptyState` | SVG scene + text | none | `art` `calendar bell wallet medal smile rest cloud`, `title hint action` | `<EmptyState art="bell" title=".." />` |
 | `ErrorState` | Arabic error + retry | none | `error onRetry` | used by `QueryBoundary` |
 | `Skeleton` | Shimmer placeholder | none | `width height round` | `<Skeleton height={16} />` |

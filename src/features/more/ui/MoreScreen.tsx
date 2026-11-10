@@ -6,6 +6,7 @@ import { useSession } from '@/core/auth/store';
 import { ar } from '@/core/strings/ar';
 import { useSheets } from '@/features/children/hooks/useSheets';
 import { TabHeader } from '@/features/shell/ui/TabHeader';
+import { AppearanceCard } from './AppearanceCard';
 import { InstituteCard } from './InstituteCard';
 import { LogoutSheet } from './LogoutSheet';
 import { PrefsCard } from './PrefsCard';
@@ -23,8 +24,9 @@ export function MoreScreen() {
       </Reveal>
       <Reveal index={1}><ProfileCard /></Reveal>
       <Reveal index={2}><InstituteCard /></Reveal>
-      <Reveal index={3}><PrefsCard /></Reveal>
-      <Reveal index={4}>
+      <Reveal index={3}><AppearanceCard /></Reveal>
+      <Reveal index={4}><PrefsCard /></Reveal>
+      <Reveal index={5}>
         <Card padding="sm" gap="none">
           {canSwitch ? <ListItem icon="swap-horizontal" title={ar.more.switchChild} onPress={openChild} /> : null}
           <ListItem
