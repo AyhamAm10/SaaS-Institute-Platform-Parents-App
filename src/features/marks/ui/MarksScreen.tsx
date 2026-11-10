@@ -1,58 +1,48 @@
-import { View } from 'react-native';
-import { AppText } from '@/components/AppText';
-import { Card } from '@/components/Card';
-import { EmptyState } from '@/components/EmptyState';
-import { QueryBoundary } from '@/components/QueryBoundary';
-import { Ring } from '@/components/Ring';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
-import { SectionHeader } from '@/components/SectionHeader';
-import { Skeleton } from '@/components/Skeleton';
-import { formatNumber } from '@/core/format/number';
-import { percentTone } from '@/core/format/status';
+import { Card, EmptyState, HeroStat, QueryBoundary, Reveal, Screen, SectionHeader, Skeleton, Stack } from '@/components/controllers';
+import { useSelectedChildId } from '@/core/auth/hooks';
 import { ar } from '@/core/strings/ar';
-import { space } from '@/core/theme/metrics';
-import { useTheme } from '@/core/theme/ThemeProvider';
-import { ChildPill } from '@/features/children/ui/ChildPill';
-import { HeaderBell } from '@/features/notifications/ui/HeaderBell';
+import { TabHeader } from '@/features/shell/ui/TabHeader';
 import { useResults } from '../hooks/useResults';
 import { SubjectCard } from './SubjectCard';
 import { UpcomingExams } from './UpcomingExams';
 
 export function MarksScreen() {
-  const theme = useTheme();
   const query = useResults();
+  const studentId = useSelectedChildId();
   return (
     <Screen
       withTabBar
-      header={<ScreenHeader start={<ChildPill />} end={<HeaderBell />} />}
+      ambient="glow"
+      header={<TabHeader />}
       refreshing={query.isRefetching}
       onRefresh={() => void query.refetch()}
     >
       <QueryBoundary
         query={query}
-        skeleton={<View style={{ gap: space.lg }}><Card><Skeleton height={200} round={100} width={200} style={{ alignSelf: 'center' }} /></Card><Card><Skeleton height={60} /></Card></View>}
+        skeleton={<Stack gap="lg"><Card variant="hero"><Skeleton height={220} round="xl" /></Card><Card><Skeleton height={60} /></Card></Stack>}
       >
-        {(data) => {
-          const tone = percentTone(data.averagePercent);
-          return (
-            <>
-              <Card style={{ alignItems: 'center' }}>
-                <Ring percent={data.averagePercent} size={188} stroke={18} color={tone === 'neutral' ? theme.accent : theme[tone]}>
-                  <View accessible accessibilityLabel={`${ar.marks.overall}: ${data.averagePercent === null ? ar.marks.noAverage : `${data.averagePercent}${ar.common.percent}`}`} style={{ alignItems: 'center' }}>
-                    <AppText variant="display">{data.averagePercent === null ? '—' : formatNumber(Math.round(data.averagePercent), 0)}</AppText>
-                    <AppText variant="caption" color="textMuted">{ar.marks.overall}</AppText>
-                  </View>
-                </Ring>
+        {(data) => (
+          <>
+            <Reveal index={0} replayKey={studentId}>
+              <Card variant="hero" padding="xl">
+                <HeroStat>
+                  <HeroStat.Ring
+                    percent={data.averagePercent}
+                    caption={ar.marks.overall}
+                    suffix={ar.common.percent}
+                    label={`${ar.marks.overall}: ${data.averagePercent === null ? ar.marks.noAverage : `${data.averagePercent}${ar.common.percent}`}`}
+                    replayKey={studentId}
+                  />
+                </HeroStat>
               </Card>
-              <SectionHeader title={ar.marks.subjects} />
-              {data.subjects.length === 0
-                ? <Card><EmptyState icon="ribbon-outline" title={ar.marks.empty} /></Card>
-                : data.subjects.map((s) => <SubjectCard key={s.subjectId} item={s} />)}
-              <UpcomingExams items={data.upcoming} />
-            </>
-          );
-        }}
+            </Reveal>
+            <SectionHeader title={ar.marks.subjects} />
+            {data.subjects.length === 0
+              ? <Card><EmptyState art="medal" title={ar.marks.empty} /></Card>
+              : data.subjects.map((s, i) => <Reveal key={s.subjectId} index={i + 1}><SubjectCard item={s} /></Reveal>)}
+            <UpcomingExams items={data.upcoming} />
+          </>
+        )}
       </QueryBoundary>
     </Screen>
   );

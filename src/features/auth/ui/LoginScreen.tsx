@@ -1,39 +1,25 @@
 import { Controller } from 'react-hook-form';
-import { KeyboardAvoidingView, Platform, ScrollView, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { AppText } from '@/components/AppText';
-import { Button } from '@/components/Button';
-import { Card } from '@/components/Card';
-import { TextField } from '@/components/TextField';
+import { BrandMark, Button, Card, Reveal, Screen, Stack, Text, TextField } from '@/components/controllers';
+import { BRAND } from '@/core/brand';
 import { ar } from '@/core/strings/ar';
-import { MAX_WIDTH, space } from '@/core/theme/metrics';
-import { useTheme } from '@/core/theme/ThemeProvider';
 import { useLoginForm } from '../hooks/useLoginForm';
 
+/** Ink canvas, big orange glow, logo + institute name, then a glass form card. */
 export function LoginScreen() {
-  const theme = useTheme();
-  const insets = useSafeAreaInsets();
   const { form, needsCode, formError, submit, submitting } = useLoginForm();
   const { control, formState: { errors } } = form;
 
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : undefined} style={{ flex: 1, backgroundColor: theme.background }}>
-      <ScrollView
-        keyboardShouldPersistTaps="handled"
-        contentContainerStyle={{
-          flexGrow: 1, justifyContent: 'center', alignSelf: 'center', width: '100%', maxWidth: MAX_WIDTH,
-          padding: space.lg, paddingTop: insets.top + space.xl, paddingBottom: insets.bottom + space.xl, gap: space.xxl,
-        }}
-      >
-        <View style={{ alignItems: 'center', gap: space.md }}>
-          <View style={{ width: 84, height: 84, borderRadius: 30, backgroundColor: theme.accent, alignItems: 'center', justifyContent: 'center' }}>
-            <Ionicons name="school" size={44} color={theme.onAccent} />
-          </View>
-          <AppText variant="title" accessibilityRole="header">{ar.auth.title}</AppText>
-          <AppText color="textMuted" center>{ar.auth.subtitle}</AppText>
-        </View>
-        <Card style={{ gap: space.lg }}>
+    <Screen canvas="ink" ambient="login" form>
+      <Reveal index={0}>
+        <Stack align="center" gap="md">
+          <BrandMark size="xl" glow />
+          <Text variant="title" align="center" accessibilityRole="header">{BRAND.name}</Text>
+          <Text tone="muted" align="center">{ar.auth.subtitle}</Text>
+        </Stack>
+      </Reveal>
+      <Reveal index={2} stretch>
+        <Card variant="hero" padding="xl" gap="lg">
           <Controller control={control} name="phone" render={({ field }) => (
             <TextField label={ar.auth.phone} value={field.value} onChangeText={field.onChange} onBlur={field.onBlur}
               keyboardType="phone-pad" textContentType="telephoneNumber" autoComplete="tel" returnKeyType="next" error={errors.phone?.message} />
@@ -50,13 +36,13 @@ export function LoginScreen() {
             )} />
           ) : null}
           {formError ? (
-            <View accessibilityRole="alert" style={{ backgroundColor: theme.tints.danger, borderRadius: 16, padding: space.md }}>
-              <AppText variant="captionStrong" color="danger">{formError}</AppText>
-            </View>
+            <Stack accessibilityRole="alert" soft="danger" radius="md" padding="md">
+              <Text variant="label" tone="danger">{formError}</Text>
+            </Stack>
           ) : null}
-          <Button label={ar.auth.submit} onPress={() => void submit()} loading={submitting} />
+          <Button label={ar.auth.submit} variant="accent" onPress={() => void submit()} loading={submitting} />
         </Card>
-      </ScrollView>
-    </KeyboardAvoidingView>
+      </Reveal>
+    </Screen>
   );
 }

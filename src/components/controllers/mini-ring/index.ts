@@ -1,0 +1,1 @@
+export { MiniRing } from './MiniRing';

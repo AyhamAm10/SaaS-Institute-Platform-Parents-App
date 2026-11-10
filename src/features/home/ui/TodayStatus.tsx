@@ -1,30 +1,28 @@
-import { View } from 'react-native';
-import { AppText } from '@/components/AppText';
-import { StatChip } from '@/components/StatChip';
-import { attendanceLabel, attendanceTone } from '@/core/format/status';
+import { Row, Stack, StatusPill, Text } from '@/components/controllers';
+import type { IconName } from '@/components/controllers';
 import type { Overview } from '@/core/api/types';
 import { formatClock } from '@/core/format/date';
+import { attendanceLabel, attendanceTone } from '@/core/format/status';
 import { ar } from '@/core/strings/ar';
-import { space } from '@/core/theme/metrics';
 
-const ICON = { PRESENT: 'checkmark-circle', LATE: 'time', ABSENT: 'close-circle', EXCUSED: 'document-text' } as const;
+const ICON: Record<string, IconName> = { PRESENT: 'checkmark-circle', LATE: 'time', ABSENT: 'close-circle', EXCUSED: 'document-text' };
 
+/** "Today" status as a pill, with check-in / check-out times. */
 export function TodayStatus({ today }: { today: Overview['today'] }) {
   const { status, checkInAt, checkOutAt } = today.attendance;
   return (
-    <View style={{ gap: space.sm }}>
-      <View style={{ flexDirection: 'row', alignItems: 'center', gap: space.sm, flexWrap: 'wrap' }}>
-        <AppText variant="captionStrong" color="textMuted">{ar.home.todayStatus}</AppText>
-        <StatChip
+    <Stack gap="sm">
+      <Row gap="sm" wrap>
+        <Text variant="label" tone="muted">{ar.home.todayStatus}</Text>
+        <StatusPill
+          large
           label={today.isWorkingDay || status ? attendanceLabel(status) : ar.home.notWorkingDay}
           tone={attendanceTone(status)}
-          icon={status ? ICON[status] : 'ellipse-outline'}
+          icon={status ? ICON[status] : 'ellipse'}
         />
-        {checkInAt ? <AppText variant="caption" color="textMuted">{`${ar.home.checkIn} ${formatClock(checkInAt)}`}</AppText> : null}
-      </View>
-      {checkOutAt ? (
-        <AppText variant="caption" color="textMuted">{`${ar.home.leftAt} ${formatClock(checkOutAt)}`}</AppText>
-      ) : null}
-    </View>
+        {checkInAt ? <Text variant="caption" tone="muted">{`${ar.home.checkIn} ${formatClock(checkInAt)}`}</Text> : null}
+      </Row>
+      {checkOutAt ? <Text variant="caption" tone="muted">{`${ar.home.leftAt} ${formatClock(checkOutAt)}`}</Text> : null}
+    </Stack>
   );
 }

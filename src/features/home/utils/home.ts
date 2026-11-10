@@ -1,4 +1,7 @@
-import type { Counts30, Lesson } from '@/core/api/types';
+import type { Counts30, Lesson, Overview } from '@/core/api/types';
+import { relativeDay } from '@/core/format/date';
+import { formatMoney, formatNumber } from '@/core/format/number';
+import { ar } from '@/core/strings/ar';
 
 /** First lesson that has not ended yet (it may be ongoing). Null when all are over or none exist. */
 export function nextLesson(lessons: Lesson[], hm: string): { lesson: Lesson; ongoing: boolean } | null {
@@ -27,4 +30,24 @@ export function trendValues(latest: { percent: number }[]): number[] {
 
 export function firstName(fullName: string): string {
   return fullName.trim().split(/\s+/)[0] ?? fullName;
+}
+
+/** Spoken description of the hero ring. */
+export function heroLabel(rate: number | null): string {
+  const value = rate === null ? ar.home.rateUnknown : `${formatNumber(Math.round(rate), 0)} ${ar.common.percent}`;
+  return `${ar.home.heroCaption}: ${value}`;
+}
+
+/** One short sentence for the timetable tile: lessons today and the next one. */
+export function scheduleSentence(lessons: Lesson[], next: { lesson: Lesson } | null): string {
+  if (lessons.length === 0) return ar.home.noLessons;
+  const tail = next ? `، ${ar.home.nextLesson}: ${next.lesson.subject} ${next.lesson.startTime}` : '';
+  return `${formatNumber(lessons.length, 0)} ${ar.home.lessonsToday}${tail}`;
+}
+
+/** One short sentence for the finance tile: settled, or the next due amount. */
+export function financeSentence(fin: NonNullable<Overview['finance']>): string {
+  if (fin.currencies.every((x) => x.remaining === 0)) return ar.home.settled;
+  const due = fin.nextDue ? `${formatMoney(fin.nextDue.amount, fin.nextDue.currency)} ${relativeDay(fin.nextDue.dueDate)}` : '—';
+  return `${ar.home.nextDue}: ${due}`;
 }

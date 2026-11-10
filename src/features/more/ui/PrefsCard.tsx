@@ -1,33 +1,25 @@
 import { useState } from 'react';
-import { Switch, View } from 'react-native';
-import { AppText } from '@/components/AppText';
-import { Card } from '@/components/Card';
+import { Card, Row, Stack, Text, Toggle } from '@/components/controllers';
 import { ar } from '@/core/strings/ar';
-import { HIT, space } from '@/core/theme/metrics';
-import { useTheme } from '@/core/theme/ThemeProvider';
 
 const KEYS = ['attendance', 'marks', 'payments', 'announcements'] as const;
 
 /** STATIC toggles (not persisted, not sent anywhere) until push notifications exist. */
 export function PrefsCard() {
-  const theme = useTheme();
   const [values, setValues] = useState<Record<(typeof KEYS)[number], boolean>>({
     attendance: true, marks: true, payments: true, announcements: false,
   });
   return (
-    <Card style={{ gap: space.xs }}>
-      <AppText variant="heading" accessibilityRole="header">{ar.more.prefs}</AppText>
-      <AppText variant="caption" color="textMuted">{ar.more.prefsNote}</AppText>
+    <Card gap="xs">
+      <Stack gap="xs">
+        <Text variant="heading" accessibilityRole="header">{ar.more.prefs}</Text>
+        <Text variant="caption" tone="muted">{ar.more.prefsNote}</Text>
+      </Stack>
       {KEYS.map((k) => (
-        <View key={k} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', minHeight: HIT + 4 }}>
-          <AppText>{ar.notifications.prefs[k]}</AppText>
-          <Switch
-            value={values[k]}
-            onValueChange={(v) => setValues((s) => ({ ...s, [k]: v }))}
-            accessibilityLabel={ar.notifications.prefs[k]}
-            trackColor={{ true: theme.accent, false: theme.track }}
-          />
-        </View>
+        <Row key={k} justify="between" minHeight={48}>
+          <Text>{ar.notifications.prefs[k]}</Text>
+          <Toggle value={values[k]} onChange={(v) => setValues((s) => ({ ...s, [k]: v }))} label={ar.notifications.prefs[k]} />
+        </Row>
       ))}
     </Card>
   );

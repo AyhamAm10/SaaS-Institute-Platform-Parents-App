@@ -1,26 +1,21 @@
-import { View } from 'react-native';
-import { Card } from '@/components/Card';
-import { Skeleton } from '@/components/Skeleton';
-import { space } from '@/core/theme/metrics';
+import { Card, Grid, Skeleton, Stack } from '@/components/controllers';
 
 export function HomeSkeleton() {
   return (
-    <View style={{ gap: space.lg }} aria-hidden>
-      <Card style={{ gap: space.xl, alignItems: 'center' }}>
-        <Skeleton width={208} height={208} round={104} />
-        <View style={{ flexDirection: 'row', gap: space.lg, width: '100%' }}>
-          {[0, 1, 2].map((i) => <Skeleton key={i} height={28} style={{ flex: 1 }} />)}
-        </View>
+    <Stack gap="lg" aria-hidden>
+      <Card variant="hero" padding="xl" gap="xl">
+        <Stack align="center"><Skeleton width={220} height={220} round="pill" /></Stack>
+        <Skeleton height={28} />
       </Card>
-      <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
+      <Grid>
         {[0, 1, 2, 3].map((i) => (
-          <Card key={i} padding={space.lg} style={{ flexBasis: '47%', flexGrow: 1, minHeight: 176, gap: space.md }}>
+          <Card key={i} fill gap="md">
             <Skeleton width={110} height={32} />
             <Skeleton height={14} />
             <Skeleton width="60%" height={14} />
           </Card>
         ))}
-      </View>
-    </View>
+      </Grid>
+    </Stack>
   );
 }

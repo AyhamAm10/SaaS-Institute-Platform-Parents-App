@@ -1,23 +1,18 @@
 import { useRouter } from 'expo-router';
-import { View } from 'react-native';
-import { AppText } from '@/components/AppText';
-import { MiniRing } from '@/components/MiniRing';
-import { Sparkline } from '@/components/Sparkline';
-import { nowHm, relativeDay } from '@/core/format/date';
-import { formatMoney, formatNumber, formatPercent } from '@/core/format/number';
-import { percentTone } from '@/core/format/status';
+import { Grid, MiniRing, Reveal, Sparkline, StatTile, Text } from '@/components/controllers';
 import type { Overview } from '@/core/api/types';
 import { useIsFamily } from '@/core/auth/store';
+import { nowHm, relativeDay } from '@/core/format/date';
+import { formatNumber, formatPercent } from '@/core/format/number';
+import { percentTone } from '@/core/format/status';
 import { ar } from '@/core/strings/ar';
-import { space } from '@/core/theme/metrics';
-import { useTheme } from '@/core/theme/ThemeProvider';
-import { nextLesson, trendValues } from '../utils/home';
-import { GridCard } from './GridCard';
+import { financeSentence, nextLesson, scheduleSentence, trendValues } from '../utils/home';
+import { FinanceVisual } from './FinanceVisual';
 import { SegmentBar } from './SegmentBar';
 
+/** 2-column grid of tinted tiles: timetable, marks, finance (guardian) or exams (student), month attendance. */
 export function HomeGrid({ data }: { data: Overview }) {
   const router = useRouter();
-  const theme = useTheme();
   const isFamily = useIsFamily();
   const { lessons } = data.today;
   const next = nextLesson(lessons, nowHm());
@@ -27,41 +22,34 @@ export function HomeGrid({ data }: { data: Overview }) {
   const upcoming = data.marks.upcoming;
   const tone = percentTone(avg);
 
-  const scheduleText = lessons.length === 0
-    ? ar.home.noLessons
-    : `${formatNumber(lessons.length, 0)} ${ar.home.lessonsToday}${next ? `، ${ar.home.nextLesson}: ${next.lesson.subject} ${next.lesson.startTime}` : ''}`;
-
-  const financeText = !fin || fin.currencies.every((x) => x.remaining === 0)
-    ? ar.home.settled
-    : `${ar.home.nextDue}: ${fin.nextDue ? `${formatMoney(fin.nextDue.amount, fin.nextDue.currency)} ${relativeDay(fin.nextDue.dueDate)}` : '—'}`;
-
   return (
-    <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: space.md }}>
-      <GridCard icon="time" tone="info" title={ar.home.timetable} sentence={scheduleText} onPress={() => router.push('/timetable')}
-        visual={<AppText variant="title" color="info">{formatNumber(lessons.length, 0)}</AppText>} />
-      <GridCard icon="ribbon" tone="success" title={ar.home.marks}
-        sentence={avg === null ? ar.marks.noAverage : `${ar.home.average} ${formatPercent(avg)}`}
-        onPress={() => router.push('/marks')}
-        visual={data.marks.latest.length > 1
-          ? <Sparkline values={trendValues(data.marks.latest)} color={theme[tone === 'neutral' ? 'accent' : tone]} />
-          : <MiniRing percent={avg} color={theme.success} />} />
-      {isFamily && fin ? (
-        <GridCard icon="wallet" tone="warning" title={ar.home.finance} sentence={financeText} onPress={() => router.push('/finance')}
-          visual={
-            <View style={{ gap: 2 }}>
-              {fin.currencies.map((x) => (
-                <AppText key={x.currency} variant="bodyStrong">{formatMoney(x.remaining, x.currency)}</AppText>
-              ))}
-            </View>
-          } />
-      ) : (
-        <GridCard icon="document-text" tone="warning" title={ar.home.upcomingExams}
-          sentence={upcoming.length ? `${upcoming[0].subject}، ${relativeDay(upcoming[0].date)}` : ar.home.noUpcoming}
-          onPress={() => router.push('/marks')}
-          visual={<AppText variant="title" color="warning">{formatNumber(upcoming.length, 0)}</AppText>} />
-      )}
-      <GridCard icon="calendar" tone="accent" title={ar.home.attendanceMonth} sentence={ar.home.thisMonth} onPress={() => router.push('/attendance')}
-        visual={<SegmentBar present={c.present} late={c.late} absent={c.absent} excused={c.excused} />} />
-    </View>
+    <Grid>
+      <Reveal index={2} fill>
+        <StatTile icon="time" tone="accent" title={ar.home.timetable} sentence={scheduleSentence(lessons, next)} onPress={() => router.push('/timetable')}
+          visual={<Text variant="number" tone="accent">{formatNumber(lessons.length, 0)}</Text>} />
+      </Reveal>
+      <Reveal index={3} fill>
+        <StatTile icon="ribbon" tone="success" title={ar.home.marks}
+          sentence={avg === null ? ar.marks.noAverage : `${ar.home.average} ${formatPercent(avg)}`} onPress={() => router.push('/marks')}
+          visual={data.marks.latest.length > 1
+            ? <Sparkline values={trendValues(data.marks.latest)} tone={tone === 'neutral' ? 'accent' : tone} />
+            : <MiniRing percent={avg} tone="success" />} />
+      </Reveal>
+      <Reveal index={4} fill>
+        {isFamily && fin ? (
+          <StatTile icon="wallet" tone="info" title={ar.home.finance} sentence={financeSentence(fin)} onPress={() => router.push('/finance')}
+            visual={<FinanceVisual finance={fin} />} />
+        ) : (
+          <StatTile icon="document-text" tone="danger" title={ar.home.upcomingExams}
+            sentence={upcoming.length ? `${upcoming[0].subject}، ${relativeDay(upcoming[0].date)}` : ar.home.noUpcoming}
+            onPress={() => router.push('/marks')}
+            visual={<Text variant="number" tone="danger">{formatNumber(upcoming.length, 0)}</Text>} />
+        )}
+      </Reveal>
+      <Reveal index={5} fill>
+        <StatTile icon="calendar" tone="warning" title={ar.home.attendanceMonth} sentence={ar.home.thisMonth} onPress={() => router.push('/attendance')}
+          visual={<SegmentBar present={c.present} late={c.late} absent={c.absent} excused={c.excused} />} />
+      </Reveal>
+    </Grid>
   );
 }

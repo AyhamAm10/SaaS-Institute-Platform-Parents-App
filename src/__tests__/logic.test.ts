@@ -1,5 +1,3 @@
-import { contrast } from '@/core/theme/color';
-import { buildTheme, resolveBrand } from '@/core/theme/tokens';
 import { pickChildId } from '@/core/auth/store-logic';
 import { loginSchema, normalizeDigits } from '@/features/auth/utils/schema';
 import { buildStatement } from '@/features/finance/utils/statement';
@@ -10,23 +8,6 @@ import { isCurrentSlot, slotsFor } from '@/features/timetable/utils/slots';
 import { financeFor } from '@/core/api/mock/finance';
 import { toArabicMessage } from '@/core/api/errors';
 import { AxiosError, type AxiosResponse } from 'axios';
-
-describe('theme from brand', () => {
-  it('falls back to the default brand for null or invalid colors', () => {
-    expect(resolveBrand(null, null)).toEqual({ primary: '#1a73e8', secondary: '#34a853' });
-    expect(resolveBrand('red', '#12')).toEqual({ primary: '#1a73e8', secondary: '#34a853' });
-  });
-  it('keeps text and accent readable in both schemes', () => {
-    for (const scheme of ['light', 'dark'] as const) {
-      const t = buildTheme(resolveBrand('#f2c94c', '#aaccaa'), scheme);
-      expect(contrast(t.text, t.background)).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(t.textMuted, t.surface)).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(t.accent, t.surface)).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(t.onAccent, t.accent)).toBeGreaterThanOrEqual(4.5);
-      expect(contrast(t.danger, t.surface)).toBeGreaterThanOrEqual(4.5);
-    }
-  });
-});
 
 describe('login schema', () => {
   it('normalizes Arabic digits', () => {

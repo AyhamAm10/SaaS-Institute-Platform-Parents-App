@@ -1,41 +1,41 @@
 {
   "expo": {
-    "name": "المعهد",
+    "name": "معهد جيل السلام",
     "slug": "parents-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/brand/logo-mark.png",
     "scheme": "institute",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon",
       "supportsTablet": false
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#141416",
+        "foregroundImage": "./assets/brand/logo-mark.png"
       },
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/images/favicon.png"
+      "favicon": "./assets/brand/logo-mark.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-localization",
-        { "supportsRTL": true, "forcesRTL": true }
+        {
+          "supportsRTL": true,
+          "forcesRTL": true
+        }
       ],
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#1a73e8",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#141416",
+          "image": "./assets/brand/logo-mark.png",
+          "imageWidth": 160
         }
       ],
       "expo-secure-store"

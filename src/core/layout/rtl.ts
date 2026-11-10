@@ -11,7 +11,3 @@ export function enforceRTL(): void {
   I18nManager.swapLeftAndRightInRTL(true);
   if (!I18nManager.isRTL) I18nManager.forceRTL(true);
 }
-
-/** Icon names for "forward/next" and "previous" in RTL reading order. */
-export const FORWARD_ICON = 'chevron-back' as const;
-export const BACK_ICON = 'chevron-forward' as const;

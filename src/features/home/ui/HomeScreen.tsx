@@ -1,15 +1,9 @@
-import { View } from 'react-native';
-import { AppText } from '@/components/AppText';
-import { QueryBoundary } from '@/components/QueryBoundary';
-import { Screen } from '@/components/Screen';
-import { ScreenHeader } from '@/components/ScreenHeader';
+import { QueryBoundary, Reveal, Screen, Stack, Text } from '@/components/controllers';
 import { formatLongDate, todayYmd } from '@/core/format/date';
 import { useSelectedChild } from '@/core/auth/hooks';
 import { useSession } from '@/core/auth/store';
 import { ar } from '@/core/strings/ar';
-import { space } from '@/core/theme/metrics';
-import { ChildPill } from '@/features/children/ui/ChildPill';
-import { HeaderBell } from '@/features/notifications/ui/HeaderBell';
+import { TabHeader } from '@/features/shell/ui/TabHeader';
 import { useOverview } from '../hooks/useOverview';
 import { firstName } from '../utils/home';
 import { HeroCard } from './HeroCard';
@@ -26,18 +20,21 @@ export function HomeScreen() {
   return (
     <Screen
       withTabBar
-      header={<ScreenHeader start={<ChildPill />} end={<HeaderBell />} />}
+      ambient="dawn"
+      header={<TabHeader />}
       refreshing={query.isRefetching}
       onRefresh={() => void query.refetch()}
     >
-      <View style={{ gap: 2, paddingHorizontal: space.xs }}>
-        <AppText variant="title" accessibilityRole="header">{`${ar.home.greeting} ${name}`}</AppText>
-        <AppText color="textMuted">{formatLongDate(todayYmd())}</AppText>
-      </View>
+      <Reveal index={0}>
+        <Stack px="xs">
+          <Text variant="title" accessibilityRole="header">{`${ar.home.greeting} ${name}`}</Text>
+          <Text tone="muted">{formatLongDate(todayYmd())}</Text>
+        </Stack>
+      </Reveal>
       <QueryBoundary query={query} skeleton={<HomeSkeleton />}>
         {(data) => (
           <>
-            <HeroCard data={data} />
+            <Reveal index={1} replayKey={child?.id}><HeroCard data={data} replayKey={child?.id} /></Reveal>
             <HomeGrid data={data} />
           </>
         )}

@@ -1,6 +1,5 @@
 import { useRouter } from 'expo-router';
-import { BottomSheet } from '@/components/BottomSheet';
-import { SheetRow } from '@/components/SheetRow';
+import { ListItem, Sheet } from '@/components/controllers';
 import { useCanSwitchChild } from '@/core/auth/hooks';
 import { useIsFamily, useSession } from '@/core/auth/store';
 import { ar } from '@/core/strings/ar';
@@ -23,16 +22,16 @@ export function QuickActionsSheet() {
   };
 
   return (
-    <BottomSheet visible={open} title={ar.quick.title} onClose={close}>
+    <Sheet visible={open} title={ar.quick.title} onClose={close}>
       {canSwitch ? (
-        <SheetRow icon="swap-horizontal" title={ar.quick.switchChild} onPress={() => { close(); setTimeout(openChild, 250); }} />
+        <ListItem icon="swap-horizontal" title={ar.quick.switchChild} onPress={() => { close(); setTimeout(openChild, 250); }} />
       ) : null}
-      <SheetRow icon="time" title={ar.quick.timetable} tone="info" onPress={() => go('/timetable')} />
-      {isFamily ? <SheetRow icon="wallet" title={ar.quick.finance} tone="success" onPress={() => go('/finance')} /> : null}
-      <SheetRow icon="notifications" title={ar.quick.notifications} tone="warning" onPress={() => go('/notifications')} />
+      <ListItem icon="time" title={ar.quick.timetable} onPress={() => go('/timetable')} />
+      {isFamily ? <ListItem icon="wallet" tone="success" title={ar.quick.finance} onPress={() => go('/finance')} /> : null}
+      <ListItem icon="notifications" tone="info" title={ar.quick.notifications} onPress={() => go('/notifications')} />
       {phone ? (
-        <SheetRow icon="call" title={ar.quick.contact} subtitle={phone} onPress={() => { close(); void openUrl(telUrl(phone)); }} />
+        <ListItem icon="call" tone="success" title={ar.quick.contact} subtitle={phone} onPress={() => { close(); void openUrl(telUrl(phone)); }} />
       ) : null}
-    </BottomSheet>
+    </Sheet>
   );
 }

@@ -1,18 +1,23 @@
 import { createContext, useContext, useMemo, type ReactNode } from 'react';
 import { useColorScheme } from 'react-native';
-import { useSession } from '@/core/auth/store';
-import { buildTheme, resolveBrand, type Theme } from './tokens';
+import { darkTokens, lightTokens, type ThemeTokens } from './tokens';
 
-const ThemeContext = createContext<Theme>(buildTheme(resolveBrand(null, null), 'light'));
+export type Scheme = 'light' | 'dark';
+export interface Theme extends ThemeTokens { scheme: Scheme }
 
-/** Builds the theme from the institute brand colors (GET /mobile/me) and the system scheme. */
+const build = (scheme: Scheme): Theme => ({ scheme, ...(scheme === 'dark' ? darkTokens : lightTokens) });
+const ThemeContext = createContext<Theme>(build('light'));
+
+/** Follows the system color scheme. Identity comes from ./tokens, never from the backend. */
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
-  const institute = useSession((s) => s.me?.institute);
-  const theme = useMemo(
-    () => buildTheme(resolveBrand(institute?.primaryColor, institute?.secondaryColor), scheme),
-    [institute?.primaryColor, institute?.secondaryColor, scheme],
-  );
+  const scheme: Scheme = useColorScheme() === 'dark' ? 'dark' : 'light';
+  const theme = useMemo(() => build(scheme), [scheme]);
+  return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
+}
+
+/** Forces one scheme for a subtree (e.g. the always-dark login). */
+export function ThemeScope({ scheme, children }: { scheme: Scheme; children: ReactNode }) {
+  const theme = useMemo(() => build(scheme), [scheme]);
   return <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>;
 }
 
