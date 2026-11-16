@@ -29,6 +29,9 @@ export function SessionGate() {
         <Stack.Protected guard={status === 'signedOut'}>
           <Stack.Screen name="login" />
         </Stack.Protected>
+        <Stack.Protected guard={status === 'mustChangePassword'}>
+          <Stack.Screen name="change-password" />
+        </Stack.Protected>
         <Stack.Protected guard={status === 'signedIn'}>
           <Stack.Screen name="(app)" />
         </Stack.Protected>

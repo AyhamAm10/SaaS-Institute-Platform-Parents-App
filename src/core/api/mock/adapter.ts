@@ -33,11 +33,22 @@ function roleOf(config: Config): MockRole | null {
 
 const tokensFor = (role: MockRole) => ({ accessToken: `mock-access-${role}`, refreshToken: `mock-refresh-${role}` });
 
+/** Demo account 0911111112 (family) starts on the default password (12345678) and must change it. */
+let forced = false;
+
 function authRoute(url: string, body: Record<string, unknown>, config: Config) {
   if (url.endsWith('/auth/login')) {
-    const role: MockRole | null = body.phone === '0911111111' ? 'FAMILY' : body.phone === '0922222222' ? 'STUDENT' : null;
+    const isForced = body.phone === '0911111112';
+    const role: MockRole | null = body.phone === '0911111111' || isForced ? 'FAMILY' : body.phone === '0922222222' ? 'STUDENT' : null;
     if (!role || !body.password) return fail(config, 401, 'invalid_credentials');
-    return ok(config, { ...tokensFor(role), user: { id: 1, role } });
+    forced = isForced;
+    return ok(config, { ...tokensFor(role), user: { id: 1, role, mustChangePassword: isForced } });
+  }
+  if (url.endsWith('/auth/me')) return ok(config, { mustChangePassword: forced });
+  if (url.endsWith('/auth/change-password')) {
+    if (body.currentPassword !== '12345678') return fail(config, 401, 'current_password_wrong');
+    forced = false;
+    return ok(config, { ...tokensFor('FAMILY'), user: { id: 1, role: 'FAMILY', mustChangePassword: false } });
   }
   if (url.endsWith('/auth/refresh')) {
     const role = String(body.refreshToken ?? '').replace('mock-refresh-', '');
@@ -53,6 +64,7 @@ export const mockAdapter: AxiosAdapter = async (config) => {
 
   const role = roleOf(config);
   if (!role) return fail(config, 401, 'unauthorized');
+  if (forced) return fail(config, 403, 'password_change_required');
   if (url.endsWith('/mobile/me')) return ok(config, role === 'FAMILY' ? familyMe : studentMe);
 
   const match = url.match(/\/mobile\/students\/(\d+)\/(\w+)/);

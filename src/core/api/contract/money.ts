@@ -49,5 +49,9 @@ export interface Profile {
 }
 
 export interface AuthTokens { accessToken: string; refreshToken: string }
-export interface LoginResponse extends AuthTokens { user: { id: number; role: string } }
+/** `mustChangePassword`: still on the default password, only the change-password call works. */
+export interface LoginResponse extends AuthTokens { user: { id: number; role: string; mustChangePassword?: boolean } }
+export interface ChangePasswordInput { currentPassword: string; newPassword: string }
+/** The part of GET /auth/me needed before the mobile profile can be read. */
+export interface AccountState { mustChangePassword: boolean }
 export interface LoginInput { phone: string; password: string; instituteCode?: string }

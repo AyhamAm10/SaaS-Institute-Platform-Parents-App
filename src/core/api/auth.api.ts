@@ -1,5 +1,5 @@
 import { api, get } from './client';
-import type { LoginInput, LoginResponse, MobileMe } from './types';
+import type { AccountState, ChangePasswordInput, LoginInput, LoginResponse, MobileMe } from './types';
 
 export async function login(input: LoginInput): Promise<LoginResponse> {
   const code = input.instituteCode?.trim();
@@ -21,3 +21,12 @@ export async function logoutRequest(): Promise<void> {
 }
 
 export const fetchMe = () => get<MobileMe>('/mobile/me');
+
+/** Works while the password is still the default one (the mobile profile does not). */
+export const fetchAccountState = () => get<AccountState>('/auth/me');
+
+/** The forced first step: returns fresh tokens, the old ones are revoked. */
+export async function changePassword(input: ChangePasswordInput): Promise<LoginResponse> {
+  const res = await api.post<LoginResponse>('/auth/change-password', input);
+  return res.data;
+}

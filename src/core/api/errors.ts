@@ -5,6 +5,8 @@ const KNOWN: Record<string, string> = {
   invalid_credentials: ar.errors.invalidCredentials,
   institute_code_required: ar.errors.instituteCodeRequired,
   token_invalid: ar.errors.sessionExpired,
+  current_password_wrong: ar.errors.currentPasswordWrong,
+  password_same_as_default: ar.errors.passwordSameAsDefault,
 };
 
 /**
@@ -16,6 +18,10 @@ const BACKEND_TEXT: Record<string, string> = {
   'بيانات الاعتماد غير صالحة': 'invalid_credentials',
   'This account exists in more than one institute. Please enter the institute code': 'institute_code_required',
   'هذا الحساب موجود بأكثر من معهد. يرجى إدخال كود المعهد': 'institute_code_required',
+  'The current password is incorrect': 'current_password_wrong',
+  'كلمة المرور الحالية غير صحيحة': 'current_password_wrong',
+  'Choose a password different from the default one': 'password_same_as_default',
+  'اختر كلمة مرور مختلفة عن الافتراضية': 'password_same_as_default',
 };
 
 function errorKey(data: unknown): string | null {

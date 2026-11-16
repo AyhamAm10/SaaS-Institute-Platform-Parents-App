@@ -21,6 +21,8 @@ export const errors = {
   invalidCredentials: 'رقم الهاتف أو كلمة المرور غير صحيحة.',
   instituteCodeRequired: 'هذا الرقم مسجل في أكثر من معهد. أدخل رمز المعهد للمتابعة.',
   sessionExpired: 'انتهت الجلسة. سجّل الدخول من جديد.',
+  currentPasswordWrong: 'كلمة المرور الحالية غير صحيحة.',
+  passwordSameAsDefault: 'اختر كلمة مرور مختلفة عن الافتراضية.',
   forbidden: 'ليس لديك صلاحية لعرض هذه البيانات.',
   notFound: 'لم يتم العثور على البيانات المطلوبة.',
   tooMany: 'محاولات كثيرة. انتظر قليلاً ثم أعد المحاولة.',
