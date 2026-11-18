@@ -3,6 +3,7 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { BrandSplash } from '@/components/controllers';
 import { restoreSession } from '@/core/auth/actions';
+import { watchForUpdates } from '@/core/updates/ota';
 import { useSession } from '@/core/auth/store';
 import { ar } from '@/core/strings/ar';
 import { useAppFonts } from '@/core/theme/fonts';
@@ -17,6 +18,9 @@ export function SessionGate() {
   useEffect(() => {
     void restoreSession();
   }, []);
+
+  // Design and logic updates arrive over the air (no new build needed)
+  useEffect(() => watchForUpdates(), []);
 
   useEffect(() => {
     if (fontsReady) void SplashScreen.hideAsync();

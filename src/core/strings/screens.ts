@@ -28,7 +28,8 @@ export const home = {
   todayStatus: 'حالة اليوم',
   notWorkingDay: 'اليوم عطلة رسمية',
   timetable: 'البرنامج',
-  lessonsToday: 'حصص اليوم',
+  lessons: { one: 'حصة واحدة', two: 'حصتان', few: 'حصص', many: 'حصة' },
+  today: 'اليوم',
   nextLesson: 'التالية',
   noLessons: 'لا حصص اليوم',
   marks: 'العلامات',
@@ -77,7 +78,7 @@ export const marks = {
   absent: 'غائب',
   pending: 'بانتظار العلامة',
   noUpcoming: 'لا مذاكرات قادمة',
-  exams: 'مذاكرات',
+  exams: { one: 'مذاكرة واحدة', two: 'مذاكرتان', few: 'مذاكرات', many: 'مذاكرة' },
 } as const;
 
 export const notes = {
@@ -93,6 +94,7 @@ export const finance = {
   paid: 'المدفوع',
   remaining: 'المتبقي',
   overdue: 'متأخر',
+  currencyName: { SYP: 'ليرة سورية', USD: 'دولار' },
   contracts: 'العقود والأقساط',
   discount: 'الحسم',
   installment: 'القسط',

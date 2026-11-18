@@ -6,7 +6,7 @@ Folder shape per controller: `init/` (props, variant maps) · `state/` (only if 
 
 | Controller | Purpose | Compound parts | Key props (allowed values) | Example |
 |---|---|---|---|---|
-| layout: `Box Stack Row Grid` | Token-typed layout | none | `gap padding px py pt pb` (space keys), `align` `start center end stretch baseline`, `justify` `start center end between around`, `wrap`, `flex`, `bg`, `solid`/`soft` (tone), `radius`; `Grid columns` | `<Row gap="md" justify="between"><Text/>...</Row>` |
+| layout: `Box Stack Row Grid` | Token-typed layout | none | `gap padding px py pt pb` (space keys), `align` `start center end stretch baseline`, `justify` `start center end between around`, `wrap`, `flex`, `bg`, `solid`/`soft` (tone), `radius`; `Grid columns` (rows of equal flex cells; never wraps a cell onto its own line) | `<Row gap="md" justify="between"><Text/>...</Row>` |
 | `Text` | Alexandria text | none | `variant` `display title heading body label caption number`; `tone` `primary secondary muted accent success danger info warning onPrimary ink`; `align` `start center end`; `tabular` `strike` | `<Text variant="title" tone="muted">..</Text>` |
 | `Icon` | Duotone Ionicons (outline + faint fill) | none | `name` (see `icon/init`), `size` `xs sm md lg xl`, `tone`, `duotone` | `<Icon name="home" tone="accentSolid" />` |
 | `Screen` | Canvas + ambient blobs + safe-area header + scroll column | none | `header`, `ambient` `dawn wave pool glow ember calm login`, `withTabBar`, `onRefresh`, `refreshing`, `canvas` `default ink`, `form` | `<Screen ambient="wave" withTabBar header={<TabHeader/>}>..</Screen>` |
@@ -25,7 +25,7 @@ Folder shape per controller: `init/` (props, variant maps) · `state/` (only if 
 | `StatusPill` | Tinted status chip | none | `label`, `tone`, `icon`, `large` | `<StatusPill label=".." tone="success" />` |
 | `ListItem` | Row: leading, title/subtitle, meta/end/chevron | none | `title subtitle icon tone leading meta end selected unread trailing chevron onPress label` | `<ListItem icon="call" title=".." onPress={f}/>` |
 | `SectionHeader` | Title with orange bar + action | none | `title actionLabel onAction` | `<SectionHeader title=".." />` |
-| `SegmentedChips` | Horizontal pill tabs | none | `items[{key,label,marker,a11yLabel}] value onChange` | `<SegmentedChips items={i} value={v} onChange={set}/>` |
+| `SegmentedChips` | Horizontal pill tabs (scrolling), or `fill`: equal chips that always fit (selected never off-screen) | none | `items[{key,label,marker,a11yLabel}] value onChange fill` | `<SegmentedChips items={i} value={v} onChange={set}/>` |
 | `CalendarGrid` | Month grid with status markers | none | `weekdays`, `cells[{key,day,tone,today,label,onPress}]` | `<CalendarGrid weekdays={w} cells={c} />` |
 | `Timeline` | Vertical rail | `Timeline.Item` | Item: `tone active last start label` | `<Timeline><Timeline.Item tone="success">..</Timeline.Item></Timeline>` |
 | `Button` | Actions | none | `variant` `primary accent ghost danger`, `label icon onPress loading disabled compact` | `<Button label=".." variant="accent" onPress={f}/>` |
@@ -35,7 +35,7 @@ Folder shape per controller: `init/` (props, variant maps) · `state/` (only if 
 | `TextField` | Glass input | none | `label error hint password` + TextInput props | `<TextField label=".." value={v} onChangeText={s}/>` |
 | `Toggle` | Switch (orange when on) | none | `value onChange label` | `<Toggle value={v} onChange={s} label=".."/>` |
 | `Sheet` | Glass bottom sheet, spring | none | `visible title onClose` | `<Sheet visible={o} title=".." onClose={c}>..</Sheet>` |
-| `TabBar` | Floating solid ink dock (active tab = expanding pill with icon + label) + orange action button | none | `items actionLabel actionOpen onAction` (+ tab bar props) | in `features/shell` |
+| `TabBar` | Floating solid ink dock (fixed equal slots; active tab = icon floating up in an ink bubble ringed with the page colour, label fades in under it; spring damping 17, Reduce Motion = no movement) + orange action button | none | `items actionLabel actionOpen onAction` (+ tab bar props) | in `features/shell` |
 | `EmptyState` | SVG scene + text | none | `art` `calendar bell wallet medal smile rest cloud`, `title hint action` | `<EmptyState art="bell" title=".." />` |
 | `ErrorState` | Arabic error + retry | none | `error onRetry` | used by `QueryBoundary` |
 | `Skeleton` | Shimmer placeholder | none | `width height round` | `<Skeleton height={16} />` |

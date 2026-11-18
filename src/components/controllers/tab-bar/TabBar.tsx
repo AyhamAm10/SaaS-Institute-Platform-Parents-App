@@ -42,13 +42,13 @@ export function TabBar({ state, navigation, items, actionLabel, actionOpen, onAc
       <View style={{ width: '100%', maxWidth: MAX_WIDTH, paddingHorizontal: space.lg, marginBottom: insets.bottom + space.sm }}>
         <View style={{ borderRadius: radius.pill, backgroundColor: theme.dockBg, borderWidth: 1, borderColor: theme.dockBorder, boxShadow: theme.elev3 }}>
           <Row accessibilityRole="tablist" height={TAB_BAR_HEIGHT} px="sm">
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               {routes.slice(0, half).map(render)}
             </View>
             <View style={{ width: 70, alignItems: 'center' }}>
               <ActionButton label={actionLabel} open={actionOpen} onPress={onAction} />
             </View>
-            <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center' }}>
+            <View style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}>
               {routes.slice(half).map(render)}
             </View>
           </Row>

@@ -7,13 +7,22 @@ interface GridProps extends Omit<BoxProps, 'direction' | 'wrap'> {
   columns?: number;
 }
 
-/** Equal-column grid built from wrapping flex cells (cells grow when a row is not full). */
+/**
+ * Equal-column grid: children are laid out in rows of `columns` equal cells
+ * (flex 1 each), so the gap never pushes a cell onto its own line on narrow
+ * screens. A last row that is not full keeps its cells at the same width.
+ */
 export function Grid({ columns = 2, gap = 'md', children, ...rest }: GridProps) {
-  const basis = `${100 / columns - 3}%` as const;
+  const cells = Children.toArray(children);
+  const rows: (typeof cells)[] = [];
+  for (let i = 0; i < cells.length; i += columns) rows.push(cells.slice(i, i + columns));
   return (
-    <Box {...rest} gap={gap} direction="row" wrap align="stretch">
-      {Children.toArray(children).map((child, i) => (
-        <Box key={i} grow={1} width={basis} align="stretch">{child}</Box>
+    <Box {...rest} gap={gap} align="stretch">
+      {rows.map((row, r) => (
+        <Box key={r} direction="row" gap={gap} align="stretch">
+          {row.map((child, c) => <Box key={c} flex={1} align="stretch">{child}</Box>)}
+          {Array.from({ length: columns - row.length }, (_, k) => <Box key={`pad${k}`} flex={1} />)}
+        </Box>
       ))}
     </Box>
   );

@@ -23,6 +23,11 @@ export function weekdayOf(ymd: string): Weekday {
   return WEEKDAYS[parseYmd(ymd).getDay()];
 }
 
+/** "أربعاء" (short name, for compact chips). */
+export function shortWeekday(day: Weekday): string {
+  return ar.weekdaysShort[WEEKDAYS.indexOf(day)];
+}
+
 export function weekdayFromIndex(index: number): Weekday {
   return WEEKDAYS[((index % 7) + 7) % 7];
 }

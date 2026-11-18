@@ -12,6 +12,16 @@ export function formatMoney(amount: number, currency: Currency): string {
   return currency === 'USD' ? `$${n}` : `${n} ${ar.currency.SYP}`;
 }
 
+/** Arabic noun forms by count: 1, 2, 3-10, 11+ (e.g. مذاكرة واحدة / مذاكرتان / 3 مذاكرات / 12 مذاكرة). */
+export interface CountForms { one: string; two: string; few: string; many: string }
+
+export function countText(n: number, forms: CountForms): string {
+  if (n === 1) return forms.one;
+  if (n === 2) return forms.two;
+  const m = n % 100;
+  return `${formatNumber(n, 0)} ${m >= 3 && m <= 10 ? forms.few : forms.many}`;
+}
+
 export function formatPercent(value: number | null): string {
   return value === null ? '—' : `${Math.round(value)}${ar.common.percent}`;
 }

@@ -1,6 +1,6 @@
 import type { Counts30, Lesson, Overview } from '@/core/api/types';
 import { relativeDay } from '@/core/format/date';
-import { formatMoney, formatNumber } from '@/core/format/number';
+import { countText, formatMoney, formatNumber } from '@/core/format/number';
 import { ar } from '@/core/strings/ar';
 
 /** First lesson that has not ended yet (it may be ongoing). Null when all are over or none exist. */
@@ -42,7 +42,7 @@ export function heroLabel(rate: number | null): string {
 export function scheduleSentence(lessons: Lesson[], next: { lesson: Lesson } | null): string {
   if (lessons.length === 0) return ar.home.noLessons;
   const tail = next ? `، ${ar.home.nextLesson}: ${next.lesson.subject} ${next.lesson.startTime}` : '';
-  return `${formatNumber(lessons.length, 0)} ${ar.home.lessonsToday}${tail}`;
+  return `${countText(lessons.length, ar.home.lessons)} ${ar.home.today}${tail}`;
 }
 
 /** One short sentence for the finance tile: settled, or the next due amount. */

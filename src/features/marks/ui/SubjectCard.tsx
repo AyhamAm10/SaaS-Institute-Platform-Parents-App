@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Card, ListItem, MiniRing, Stack, StatusPill, Text } from '@/components/controllers';
 import type { SubjectResults } from '@/core/api/types';
 import { formatDayMonth } from '@/core/format/date';
-import { formatNumber, formatPercent } from '@/core/format/number';
+import { countText, formatNumber, formatPercent } from '@/core/format/number';
 import { percentTone } from '@/core/format/status';
 import { ar } from '@/core/strings/ar';
 
@@ -10,7 +10,7 @@ import { ar } from '@/core/strings/ar';
 export function SubjectCard({ item }: { item: SubjectResults }) {
   const [open, setOpen] = useState(false);
   const tone = percentTone(item.averagePercent);
-  const exams = `${formatNumber(item.results.length, 0)} ${ar.marks.exams}`;
+  const exams = countText(item.results.length, ar.marks.exams);
   return (
     <Card padding="sm" gap="xs">
       <ListItem

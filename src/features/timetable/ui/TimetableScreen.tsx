@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Card, EmptyState, QueryBoundary, Reveal, Screen, SegmentedChips, Skeleton, Stack, Timeline } from '@/components/controllers';
 import type { Weekday } from '@/core/api/types';
-import { nowHm, weekdayFromIndex } from '@/core/format/date';
+import { nowHm, shortWeekday, weekdayFromIndex } from '@/core/format/date';
 import { ar } from '@/core/strings/ar';
 import { StackHeader } from '@/features/shell/ui/StackHeader';
 import { useTimetable } from '../hooks/useTimetable';
@@ -34,11 +34,12 @@ export function TimetableScreen() {
             <>
               <Reveal index={0}>
                 <SegmentedChips
+                  fill
                   value={selected}
                   onChange={(k) => setPicked(k as Weekday)}
                   items={days.map((d) => ({
                     key: d,
-                    label: ar.weekdays[d],
+                    label: shortWeekday(d),
                     marker: d === today,
                     a11yLabel: d === today ? `${ar.weekdays[d]}، ${ar.common.today}` : ar.weekdays[d],
                   }))}
