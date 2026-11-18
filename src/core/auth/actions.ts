@@ -2,6 +2,7 @@ import { changePassword, fetchAccountState, fetchMe, login, logoutRequest } from
 import { setAuthFailureHandler } from '@/core/api/client';
 import type { ChangePasswordInput, LoginInput } from '@/core/api/types';
 import { queryClient } from '@/core/api/query-client';
+import { releasePushDevice, syncPushDevice } from '@/core/push/registration';
 import { loadSelectedChildId, saveSelectedChildId } from '@/core/storage/preferences';
 import { clearTokens, loadTokens, saveTokens } from '@/core/storage/tokens';
 import { useSession } from './store';
@@ -10,6 +11,8 @@ async function loadProfile(): Promise<void> {
   const me = await fetchMe();
   const preferred = await loadSelectedChildId();
   useSession.getState().setSignedIn(me, preferred);
+  // Push is best effort: registers this device in the background
+  void syncPushDevice();
 }
 
 /** App start: restore a stored session (splash is shown while status === 'restoring'). */
@@ -65,6 +68,7 @@ export async function changePasswordAndContinue(input: ChangePasswordInput): Pro
 }
 
 export async function signOut(): Promise<void> {
+  await releasePushDevice();
   await logoutRequest();
   await clearTokens();
   queryClient.clear();

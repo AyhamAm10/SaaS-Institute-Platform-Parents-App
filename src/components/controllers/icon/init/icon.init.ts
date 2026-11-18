@@ -4,7 +4,8 @@ export const DUOTONE_ICONS = [
   'information-circle', 'log-out', 'location', 'call', 'people', 'school', 'card', 'megaphone',
   'close-circle', 'checkmark-circle', 'happy', 'cafe', 'calendar-clear', 'cloud-offline', 'share-social',
   'person', 'swap-horizontal', 'notifications-off', 'bus', 'receipt', 'alert-circle', 'sparkles',
-  'trending-up', 'shield-checkmark', 'book', 'ellipse', 'refresh', 'moon',
+  'trending-up', 'shield-checkmark', 'book', 'ellipse', 'refresh', 'moon', 'chatbubble-ellipses', 'exit',
+  'phone-portrait',
 ] as const;
 
 export const PLAIN_ICONS = [

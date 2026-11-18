@@ -1,21 +1,31 @@
 import type { IconName } from '@/components/controllers';
 import { ListItem } from '@/components/controllers';
+import type { ServerNotificationType } from '@/core/api/types';
 import type { ToneKey } from '@/core/theme/tones';
 import { ar } from '@/core/strings/ar';
-import type { NotificationItem, NotificationType } from '../types';
+import type { NotificationItem } from '../types';
 
-const META: Record<NotificationType, { icon: IconName; tone: ToneKey }> = {
-  absence: { icon: 'close-circle', tone: 'danger' },
-  late: { icon: 'time', tone: 'warning' },
-  mark: { icon: 'ribbon', tone: 'success' },
-  payment: { icon: 'wallet', tone: 'success' },
-  installment: { icon: 'card', tone: 'warning' },
-  exam: { icon: 'document-text', tone: 'info' },
-  announcement: { icon: 'megaphone', tone: 'info' },
+const META: Record<ServerNotificationType, { icon: IconName; tone: ToneKey }> = {
+  ATTENDANCE_ARRIVAL: { icon: 'checkmark-circle', tone: 'success' },
+  ATTENDANCE_LATE: { icon: 'time', tone: 'warning' },
+  ATTENDANCE_ABSENT: { icon: 'close-circle', tone: 'danger' },
+  ATTENDANCE_EARLY_EXIT: { icon: 'exit', tone: 'warning' },
+  ATTENDANCE_EXCUSED: { icon: 'shield-checkmark', tone: 'info' },
+  PAYMENT_RECEIVED: { icon: 'wallet', tone: 'success' },
+  INSTALLMENT_DUE: { icon: 'card', tone: 'warning' },
+  INSTALLMENT_OVERDUE: { icon: 'alert-circle', tone: 'danger' },
+  EXAM_SCHEDULED: { icon: 'document-text', tone: 'info' },
+  EXAM_RESULT: { icon: 'ribbon', tone: 'success' },
+  TIMETABLE_CHANGED: { icon: 'calendar', tone: 'info' },
+  STUDENT_NOTE: { icon: 'chatbubble-ellipses', tone: 'info' },
+  CLOSURE: { icon: 'cafe', tone: 'info' },
+  TEACHER_ASSIGNED: { icon: 'school', tone: 'info' },
+  TEACHER_EXAM_CREATED: { icon: 'document-text', tone: 'info' },
+  MARKS_REMINDER: { icon: 'ribbon', tone: 'warning' },
 };
 
 export function NotificationRow({ item, onPress }: { item: NotificationItem; onPress: () => void }) {
-  const meta = META[item.type];
+  const meta = META[item.type] ?? { icon: 'notifications', tone: 'info' };
   return (
     <ListItem
       icon={meta.icon}
@@ -24,9 +34,9 @@ export function NotificationRow({ item, onPress }: { item: NotificationItem; onP
       subtitle={item.body}
       meta={item.time}
       unread={!item.read}
-      chevron={false}
+      chevron={item.path !== null && item.path !== '/notifications'}
       onPress={onPress}
-      label={`${item.read ? '' : 'غير مقروء، '}${ar.notifications.types[item.type]}، ${item.title}، ${item.body}`}
+      label={`${item.read ? '' : `${ar.notifications.unread}، `}${item.title}، ${item.body}، ${item.time}`}
     />
   );
 }

@@ -7,7 +7,7 @@ One Expo app for guardians (`FAMILY`) and students (`STUDENT`) of ONE institute 
 2. `src/components/controllers/<name>/`: the design system (catalog in `controllers/README.md`). Folders only as needed: `init/` (props, variant maps), `state/` + `store/` (only if genuinely stateful), `ui/` (pure parts), `<Name>.tsx` (root, compound API like `Card.Header`, `HeroStat.Ring`), `index.ts`. Only this layer may import `View Text Pressable ScrollView FlatList Image TextInput StyleSheet`, reanimated, svg, blur, linear-gradient, icons, gesture-handler, and write style values (always from tokens).
 3. `src/features/<feature>/{api,hooks,utils,static-data,ui}`: `api` = axios calls, `hooks` = TanStack Query + state composition, `ui` COMPOSES controllers only (`Stack/Row/Box/Grid` props for layout).
 4. `src/app/**` (expo-router): each route file renders ONE `<XScreen />` exported by its feature (layouts render a shell from `features/shell`).
-`src/core/{api,auth,storage,format,strings,layout}` is infrastructure usable by every layer.
+`src/core/{api,auth,storage,format,strings,layout,push}` is infrastructure usable by every layer (`push`: device token, permission, listeners; `device.web.ts` is the web variant).
 
 ## ESLint enforcement (`eslint.config.js`; `npx expo lint` must be 0 errors, 0 warnings)
 - `no-restricted-imports` in `src/features/**` and `src/app/**`: from `react-native` only `Linking Share Alert Keyboard Platform` (allow-list regex); reanimated, svg, blur, linear-gradient, `@expo/vector-icons`, gesture-handler, expo-image are banned.
@@ -24,7 +24,7 @@ One Expo app for guardians (`FAMILY`) and students (`STUDENT`) of ONE institute 
 
 ## Code
 - One axios instance (`core/api/client.ts`) with auth + single-flight refresh (`refresh.ts`). Features never create their own client. Server state = TanStack Query only; query keys include `studentId`; `keepPreviousData` when switching months. zustand only for session/selected child and tiny UI state (open sheets, read ids).
-- Tokens live in `expo-secure-store` ONLY (`core/storage`); web localStorage is a dev-only fallback.
+- Tokens live in `expo-secure-store` (`core/storage`); the installed web app (iPhone path) uses localStorage of its own origin.
 - All user-facing strings come from `core/strings`; API errors via `core/api/errors` (English/Arabic mapping). No `any`.
 - RTL always: use `start/end`; `Row` mirrors automatically; chevrons come from `BACK_ICON`/`FORWARD_ICON`. Money: SYP and USD are never mixed (`formatMoney`).
 - Accessibility: role + label on every control, >= 44pt targets (`PressableScale`/`IconButton`/`Button` guarantee it), color never the only signal, Reduce Motion respected (`useReducedMotion` in every animated controller), light haptic on press.
@@ -35,7 +35,7 @@ One Expo app for guardians (`FAMILY`) and students (`STUDENT`) of ONE institute 
 - Feature screen: `features/<f>/api` + `hooks` (data), `ui/<F>Screen.tsx` composing `Screen`, `QueryBoundary`, `Reveal`, `Card`... ; then `src/app/<route>.tsx` = `export default function X() { return <XScreen />; }`. Shell pieces (tab bar, headers, session gate) are in `features/shell`.
 
 ## Mock mode
-`EXPO_PUBLIC_USE_MOCK=1` swaps the axios adapter for `core/api/mock/` fixtures (gated by `__DEV__`). Demo logins: guardian `0911111111`, student `0922222222`, any password. Notifications are static (`features/notifications/static-data`, hook `useNotifications`).
+`EXPO_PUBLIC_USE_MOCK=1` swaps the axios adapter for `core/api/mock/` fixtures (gated by `__DEV__`). Demo logins: guardian `0911111111`, student `0922222222`, any password. `/notifications/*` is mocked in `core/api/mock/notifications.ts` (push registration is skipped in mock mode).
 
 ## Verification before finishing
 `npx tsc --noEmit`, `npx expo lint`, `npm test`, `npx expo export --platform web`; look at every screen in the browser (light and dark, 390x844); update `docs/features/mobile-app.md` and run `node docs/scripts/docs-tools.cjs check` from the workspace root.

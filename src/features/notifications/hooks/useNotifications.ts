@@ -1,35 +1,49 @@
 import { useMemo } from 'react';
-import { create } from 'zustand';
-import { placeholderNotifications } from '../static-data/notifications.placeholder';
-import type { NotificationItem } from '../types';
+import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { useSession } from '@/core/auth/store';
+import { fetchInbox, fetchUnreadCount, markNotificationsRead } from '../api/notifications.api';
+import { toItem } from '../utils/group';
 
-interface ReadState { readIds: string[]; markAllRead: (ids: string[]) => void; markRead: (id: string) => void }
+export const NOTIFICATIONS_KEY = ['notifications'] as const;
 
-const useReadState = create<ReadState>((set) => ({
-  readIds: [],
-  markAllRead: (ids) => set((s) => ({ readIds: [...new Set([...s.readIds, ...ids])] })),
-  markRead: (id) => set((s) => ({ readIds: s.readIds.includes(id) ? s.readIds : [...s.readIds, id] })),
-}));
+/** The unread badge (header bell): refreshed every minute and on every push. */
+export function useUnreadCount(): number {
+  const signedIn = useSession((s) => s.status === 'signedIn');
+  const { data } = useQuery({
+    queryKey: [...NOTIFICATIONS_KEY, 'unread'],
+    queryFn: fetchUnreadCount,
+    enabled: signedIn,
+    refetchInterval: 60_000,
+    refetchOnWindowFocus: true,
+    staleTime: 15_000,
+  });
+  return data?.unread ?? 0;
+}
 
-const SOURCE = placeholderNotifications();
-
-/**
- * The single entry point for notifications. Today it returns static placeholder data
- * (local read state only); wire the backend by replacing SOURCE with a query result.
- */
+/** The inbox, newest first, loaded page by page. */
 export function useNotifications() {
-  const readIds = useReadState((s) => s.readIds);
-  const { markAllRead, markRead } = useReadState.getState();
-  const items: NotificationItem[] = useMemo(
-    () => SOURCE.map((n) => ({ ...n, read: n.read || readIds.includes(n.id) })),
-    [readIds],
-  );
-  const unreadCount = items.filter((n) => !n.read).length;
+  const client = useQueryClient();
+  const query = useInfiniteQuery({
+    queryKey: [...NOTIFICATIONS_KEY, 'inbox'],
+    queryFn: ({ pageParam }) => fetchInbox(pageParam),
+    initialPageParam: 1,
+    getNextPageParam: (last) => (last.page < last.totalPages ? last.page + 1 : undefined),
+    staleTime: 15_000,
+    refetchOnWindowFocus: true,
+  });
+  const items = useMemo(() => (query.data?.pages ?? []).flatMap((p) => p.data.map(toItem)), [query.data]);
+  const unreadCount = query.data?.pages[0]?.unread ?? 0;
+
+  const mark = useMutation({
+    mutationFn: markNotificationsRead,
+    onSettled: () => client.invalidateQueries({ queryKey: NOTIFICATIONS_KEY }),
+  });
+
   return {
+    query,
     items,
     unreadCount,
-    isLoading: false,
-    markRead,
-    markAllRead: () => markAllRead(items.map((n) => n.id)),
+    markRead: (id: number) => mark.mutate(id),
+    markAllRead: () => mark.mutate(undefined),
   };
 }

@@ -1,6 +1,8 @@
 import { AxiosError, type AxiosAdapter, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { attendanceFor } from './attendance';
 import { monthKey } from './dates';
+import { notesFor } from './notes';
+import { notificationsRoute } from './notifications';
 import { financeFor } from './finance';
 import { familyMe, studentMe } from './me';
 import { overviewFor } from './overview';
@@ -66,6 +68,8 @@ export const mockAdapter: AxiosAdapter = async (config) => {
   if (!role) return fail(config, 401, 'unauthorized');
   if (forced) return fail(config, 403, 'password_change_required');
   if (url.endsWith('/mobile/me')) return ok(config, role === 'FAMILY' ? familyMe : studentMe);
+  const inbox = notificationsRoute(url, config.method ?? 'get', body);
+  if (inbox !== null) return ok(config, inbox);
 
   const match = url.match(/\/mobile\/students\/(\d+)\/(\w+)/);
   if (!match) return fail(config, 404, 'not found');
@@ -78,6 +82,7 @@ export const mockAdapter: AxiosAdapter = async (config) => {
     case 'timetable': return ok(config, timetableFor());
     case 'results': return ok(config, resultsFor());
     case 'profile': return ok(config, profileFor(id, role === 'FAMILY'));
+    case 'notes': return role === 'FAMILY' ? ok(config, notesFor()) : fail(config, 403, 'forbidden');
     case 'finance': return role === 'FAMILY' ? ok(config, financeFor()) : fail(config, 403, 'forbidden');
     default: return fail(config, 404, 'not found');
   }

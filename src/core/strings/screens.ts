@@ -11,6 +11,7 @@ export const quick = {
   switchChild: 'تبديل الطالب',
   timetable: 'برنامج الدوام',
   finance: 'المالية',
+  notes: 'ملاحظات الإدارة',
   notifications: 'الإشعارات',
   contact: 'الاتصال بالمعهد',
 } as const;
@@ -79,6 +80,12 @@ export const marks = {
   exams: 'مذاكرات',
 } as const;
 
+export const notes = {
+  title: 'ملاحظات الإدارة',
+  empty: 'لا ملاحظات من الإدارة',
+  emptyHint: 'ستظهر هنا أي ملاحظة ترسلها إدارة المعهد',
+} as const;
+
 export const finance = {
   title: 'المالية',
   summary: 'ملخص الرصيد',
@@ -124,7 +131,7 @@ export const more = {
   schemeLight: 'فاتح',
   schemeDark: 'داكن',
   prefs: 'تفضيلات الإشعارات',
-  prefsNote: 'الإعدادات تجريبية وسيتم تفعيلها لاحقاً',
+  prefsNote: 'تُحفظ لحسابك وتسري على كل أجهزتك',
   switchChild: 'تبديل الطالب',
   about: 'حول التطبيق',
   version: 'الإصدار',

@@ -3,7 +3,7 @@ import { loginSchema, normalizeDigits } from '@/features/auth/utils/schema';
 import { buildStatement } from '@/features/finance/utils/statement';
 import { attendanceShares, nextLesson, trendValues } from '@/features/home/utils/home';
 import { whatsappNumber } from '@/features/more/utils/contact-format';
-import { groupByDay } from '@/features/notifications/utils/group';
+import { groupByDay, toItem } from '@/features/notifications/utils/group';
 import { isCurrentSlot, slotsFor } from '@/features/timetable/utils/slots';
 import { financeFor } from '@/core/api/mock/finance';
 import { toArabicMessage } from '@/core/api/errors';
@@ -60,10 +60,18 @@ describe('timetable, notifications, contacts', () => {
     expect(isCurrentSlot(tt.days[0].slots[1], '09:00')).toBe(false);
   });
   it('groups notifications newest day first', () => {
-    const mk = (id: string, date: string, time: string) => ({ id, type: 'mark' as const, title: '', body: '', date, time, read: false });
-    const g = groupByDay([mk('a', '2026-11-01', '09:00'), mk('b', '2026-11-02', '08:00'), mk('c', '2026-11-02', '10:00')]);
+    const mk = (id: number, date: string, time: string) => ({
+      id, type: 'EXAM_RESULT' as const, title: '', body: '', date, time, read: false, path: null, studentId: null,
+    });
+    const g = groupByDay([mk(1, '2026-11-01', '09:00'), mk(2, '2026-11-02', '08:00'), mk(3, '2026-11-02', '10:00')]);
     expect(g.map((x) => x.date)).toEqual(['2026-11-02', '2026-11-01']);
-    expect(g[0].items.map((i) => i.id)).toEqual(['c', 'b']);
+    expect(g[0].items.map((i) => i.id)).toEqual([3, 2]);
+  });
+  it('maps an inbox row to local time and keeps only screens the app has', () => {
+    const at = new Date(2026, 10, 17, 8, 5);
+    const row = { id: 9, type: 'ATTENDANCE_ARRIVAL' as const, title: 't', body: 'b', studentId: 11, read: false, createdAt: at.toISOString() };
+    expect(toItem({ ...row, data: { path: '/attendance' } })).toMatchObject({ date: '2026-11-17', time: '08:05', path: '/attendance' });
+    expect(toItem({ ...row, data: { path: '/sections' } }).path).toBeNull();
   });
   it('converts Syrian numbers for WhatsApp', () => {
     expect(whatsappNumber('0933 445 566')).toBe('963933445566');

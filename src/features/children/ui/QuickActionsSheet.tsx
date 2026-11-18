@@ -16,7 +16,7 @@ export function QuickActionsSheet() {
   const isFamily = useIsFamily();
   const phone = useSession((s) => s.me?.institute.phone);
 
-  const go = (path: '/timetable' | '/finance' | '/notifications') => {
+  const go = (path: '/timetable' | '/finance' | '/notes' | '/notifications') => {
     close();
     router.push(path);
   };
@@ -28,6 +28,7 @@ export function QuickActionsSheet() {
       ) : null}
       <ListItem icon="time" title={ar.quick.timetable} onPress={() => go('/timetable')} />
       {isFamily ? <ListItem icon="wallet" tone="success" title={ar.quick.finance} onPress={() => go('/finance')} /> : null}
+      {isFamily ? <ListItem icon="megaphone" tone="accent" title={ar.quick.notes} onPress={() => go('/notes')} /> : null}
       <ListItem icon="notifications" tone="info" title={ar.quick.notifications} onPress={() => go('/notifications')} />
       {phone ? (
         <ListItem icon="call" tone="success" title={ar.quick.contact} subtitle={phone} onPress={() => { close(); void openUrl(telUrl(phone)); }} />
