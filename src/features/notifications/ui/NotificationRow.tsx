@@ -22,6 +22,7 @@ const META: Record<ServerNotificationType, { icon: IconName; tone: ToneKey }> = 
   TEACHER_ASSIGNED: { icon: 'school', tone: 'info' },
   TEACHER_EXAM_CREATED: { icon: 'document-text', tone: 'info' },
   MARKS_REMINDER: { icon: 'ribbon', tone: 'warning' },
+  LESSON_REMINDER: { icon: 'time', tone: 'accent' },
 };
 
 export function NotificationRow({ item, onPress }: { item: NotificationItem; onPress: () => void }) {
